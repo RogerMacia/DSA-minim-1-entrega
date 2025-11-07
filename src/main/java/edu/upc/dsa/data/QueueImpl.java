@@ -29,6 +29,11 @@ public class QueueImpl<E> implements Queue<E>{
             this.data[i-1] = this.data[i];
         }
         p--;
+
+        if (p == 0) {
+            this.data[0] = null;
+        }
+
         return e;
     }
 

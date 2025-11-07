@@ -1,6 +1,7 @@
 package edu.upc.dsa;
 
 import edu.upc.dsa.exceptions.BookNotFoundException;
+import edu.upc.dsa.exceptions.InvalidDateFormatException;
 import edu.upc.dsa.exceptions.UserNotFoundException;
 import org.junit.After;
 import org.junit.Assert;
@@ -13,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import edu.upc.dsa.models.*;
 import edu.upc.dsa.data.*;
+import org.junit.rules.ExpectedException;
 
 public class BibliotecaManagerImplTest {
 
@@ -35,7 +37,7 @@ public class BibliotecaManagerImplTest {
     }
 
     @Test
-    public void testAddUser() {
+    public void testAddUser1() {
         User user = new User("Pau", "Martí", "12345678A", "01/01/1990", "Barcelona", "Carrer Major 1");
         bm.addUser(user);
 
@@ -44,18 +46,24 @@ public class BibliotecaManagerImplTest {
     }
 
     @Test
-    public void testAddUserWithParams() {
+    public void testAddUser2() {
         bm.addUser("Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
         Assert.assertEquals(1, bm.getUsers().size());
     }
 
     @Test
-    public void testAddUserWithWrongParams() throws IllegalArgumentException {
+    public void testAddUser3() {
+        bm.addUser("1", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
+        Assert.assertEquals(1, bm.getUsers().size());
+    }
+
+    @Test(expected = InvalidDateFormatException.class)
+    public void testAddUserWithWrongDateFormat() {
         bm.addUser("Joan", "Serra", "87654321B", "1980", "Girona", "Carrer Nou 3");
     }
 
     @Test
-    public void testAddBook() {
+    public void testAddBook1() {
         Book book = new Book("978-84-376-0494-7", "El Quixot", "Planeta", "1-2-2005", 1, "Cervantes", "Novel·la");
         bm.addBook(book);
 
@@ -63,53 +71,75 @@ public class BibliotecaManagerImplTest {
     }
 
     @Test
+    public void testAddBook2() {
+        bm.addBook("978-84-376-0494-7", "El Quixot", "Planeta", "1-2-2005", 1, "Cervantes", "Novel·la");
+
+
+        Assert.assertEquals(1, bm.getPilaLlibresPrimera().size());
+    }
+
+    @Test
+    public void testAddBook3() {
+        bm.addBook("1", "978-84-376-0494-7", "El Quixot", "Planeta", "1-2-2005", 1, "Cervantes", "Novel·la");
+
+        Assert.assertEquals(1, bm.getPilaLlibresPrimera().size());
+    }
+
+    @Test
+    public void testAddBook4() {
+        for (int i = 0; i < 50; i++) {
+            bm.addBook(String.valueOf(i), "ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        }
+
+        Assert.assertEquals(5, bm.getPilesLlibres().size());
+    }
+
+    @Test
     public void testCatalogarBookBuit() {
         Queue<Book> q = new QueueImpl<>(10);
 
-        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
-        book.setId("b1");
-        q.push(book);
-
-        bm.setPilaLlibresPrimera(q);
+        bm.addBook("1", "978-84-376-0494-7", "El Quixot", "Planeta", "1-2-2005", 1, "Cervantes", "Novel·la");
 
         bm.catalogarBook();
 
         Assert.assertEquals(1, bm.getBooks().size());
-        Assert.assertEquals("b1", bm.getBooks().get(0).getId());
+        Assert.assertEquals("1", bm.getBooks().get(0).getId());
         Assert.assertEquals(0, bm.getPilaLlibresPrimera().size());
     }
 
     @Test
     public void testCatalogarBook2Queues() {
-        Queue<Book> q1 = new QueueImpl<>(10);
-        Queue<Book> q2 = new QueueImpl<>(10);
-        LinkedList<Queue<Book>> lq = new LinkedList<>();
-
-        Book book1 = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
-        Book book2 = new Book("ISBN2", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-
-        book1.setId("b1");
-        book2.setId("b2");
-        q1.push(book1);
-        q2.push(book2);
-        lq.add(q2);
-
-        bm.setPilaLlibresPrimera(q1);
-        bm.setPilesLlibres(lq);
+        bm.addBook("1", "ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        bm.addBook("2", "ISBN2", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
 
         bm.catalogarBook();
         bm.catalogarBook();
 
         Assert.assertEquals(2, bm.getBooks().size());
-        Assert.assertEquals("b1", bm.getBooks().get(0).getId());
-        Assert.assertEquals("b2", bm.getBooks().get(1).getId());
+        Assert.assertEquals("1", bm.getBooks().get(0).getId());
+        Assert.assertEquals("2", bm.getBooks().get(1).getId());
         Assert.assertEquals(0, bm.getPilaLlibresPrimera().size());
     }
 
     @Test
-    public void testAddPrestec() {
+    public void testCatalogarBookMoltesCues() {
+        for (int i = 0; i < 50; i++) {
+            bm.addBook(String.valueOf(i), "ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        }
+
+        for (int i = 0; i < 25; i++) {
+            bm.catalogarBook();
+        }
+
+        Assert.assertEquals(2, bm.getPilesLlibres().size());
+    }
+
+    @Test
+    public void testAddPrestec1() {
         bm.addUser("1", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
-        bm.addBook("2", "ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        book.setId("2");
+        bm.getBooks().add(book);
 
         Prestec p = new Prestec("1", "2", "01/11/2025", "15/11/2025");
         bm.addPrestec(p);
@@ -118,39 +148,59 @@ public class BibliotecaManagerImplTest {
     }
 
     @Test
-    public void testAddPrestecUserIncorrecte() throws UserNotFoundException {
+    public void testAddPrestec2() {
+        bm.addUser("1", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
+        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        book.setId("2");
+        bm.getBooks().add(book);
+
+        bm.addPrestec("1", "2", "01/11/2025", "15/11/2025");
+
+        Assert.assertEquals(1, bm.getPrestecs().size());
+    }
+
+    @Test
+    public void testAddPrestec3() {
+        bm.addUser("1", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
+        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        book.setId("2");
+        bm.getBooks().add(book);
+
+        bm.addPrestec("1", "1", "2", "01/11/2025", "15/11/2025");
+
+        Assert.assertEquals(1, bm.getPrestecs().size());
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void testAddPrestecUserIncorrecte() {
         bm.addUser("2", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
-        bm.addBook("2", "ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        book.setId("2");
+        bm.getBooks().add(book);
 
         Prestec p = new Prestec("1", "2", "01/11/2025", "15/11/2025");
         bm.addPrestec(p);
     }
 
-    @Test
-    public void testAddPrestecPrestecIncorrecte() throws BookNotFoundException {
+    @Test(expected = BookNotFoundException.class)
+    public void testAddPrestecBookIncorrecte() {
         bm.addUser("1", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
-        bm.addBook("1", "ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        book.setId("1");
+        bm.getBooks().add(book);
 
         Prestec p = new Prestec("1", "2", "01/11/2025", "15/11/2025");
         bm.addPrestec(p);
     }
 
-    @Test
-    public void testAddPrestecWithParams() {
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddPrestecDataIncorrecte() {
         bm.addUser("1", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
-        bm.addBook("1", "ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        book.setId("1");
+        bm.getBooks().add(book);
 
-        bm.addPrestec("1", "1", "01/11/2025", "10/11/2025");
-    }
-
-    @Test
-    public void testClear() {
-        bm.getBooks().add(new Book("111", "Test", "Planeta", "2020", 1, "Autor", "Tema"));
-        bm.addUser(new User("Anna", "Riba", "9999", "01/01/2001", "Tarragona", "Carrer X"));
-
-        bm.clear();
-
-        Assert.assertNull(bm);
+        new Prestec("1", "2", "01/11/2025", "15/1/2025");
     }
 
     @Test
@@ -158,14 +208,52 @@ public class BibliotecaManagerImplTest {
         User u1 = new User("Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
         u1.setId("1");
         bm.addUser(u1);
-        bm.addBook("1", "ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
-        bm.addBook("2", "ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book1 = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        book1.setId("1");
+        Book book2 = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        book2.setId("2");
+
+        bm.getBooks().add(book1);
+        bm.getBooks().add(book2);
 
         bm.addPrestec("1", "1", "01/11/2025", "10/11/2025");
-        bm.addPrestec("1", "2", "11/11/2025", "10/1/2025");
+        bm.addPrestec("1", "2", "11/11/2025", "10/12/2025");
 
         List<Prestec> prestecs = bm.getPrestecDeLector(u1);
-        Assert.assertEquals("1", prestecs.get(0).getId());
-        Assert.assertEquals("2", prestecs.get(1).getId());
+        Assert.assertEquals("1", prestecs.get(0).getIdBook());
+        Assert.assertEquals("2", prestecs.get(1).getIdBook());
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void testGetPrestecDeLectorNoDefinit() {
+        User u1 = new User("Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
+        u1.setId("1");
+        bm.addUser(u1);
+        Book book1 = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        book1.setId("1");
+        Book book2 = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        book2.setId("2");
+
+        bm.getBooks().add(book1);
+        bm.getBooks().add(book2);
+
+        bm.addPrestec("5", "1", "01/11/2025", "10/11/2025");
+        bm.addPrestec("5", "2", "11/11/2025", "10/12/2025");
+
+        bm.getPrestecDeLector(u1);
+    }
+
+    @Test
+    public void testClear() {
+        bm.getBooks().add(new Book("111", "Test", "Planeta", "5/12/2020", 1, "Autor", "Tema"));
+        bm.addUser(new User("Anna", "Riba", "9999", "01/01/2001", "Tarragona", "Carrer X"));
+
+        bm.clear();
+
+        Assert.assertNull(bm.getBooks());
+        Assert.assertNull(bm.getUsers());
+        Assert.assertNull(bm.getPrestecs());
+        Assert.assertNull(bm.getPilaLlibresPrimera());
+        Assert.assertNull(bm.getPilesLlibres());
     }
 }

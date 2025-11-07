@@ -91,6 +91,19 @@ public class BibliotecaManagerImpl implements BibliotecaManager {
         return null;
     }
 
+    private Book getBookByISBN(String id) {
+        logger.info("Searching for the book...");
+
+        for (Book b : books) {
+            if (id.equals(b.getId())) {
+                logger.info("Book found!");
+                return b;
+            }
+        }
+        logger.info("No book found");
+        return null;
+    }
+
     @Override
     public void addUser(User user) {
         this.users.put(user.getId(), user);
@@ -117,15 +130,16 @@ public class BibliotecaManagerImpl implements BibliotecaManager {
         if (pilaLlibresPrimera.size() == 0) {
             pilaLlibresPrimera.push(book);
         }
-
-        Queue<Book> lastQueue = pilesLlibres.get(pilesLlibres.size() - 1);
-        if (lastQueue.size() < 10) {
-            lastQueue.push(book);
-        }
         else {
-            pilesLlibres.add(new QueueImpl<Book>(10));
-            logger.info("New queue created");
-            pilesLlibres.get(pilesLlibres.size() - 1).push(book);
+            Queue<Book> lastQueue = pilesLlibres.get(pilesLlibres.size() - 1);
+            if (lastQueue.size() < 10) {
+                lastQueue.push(book);
+            }
+            else {
+                pilesLlibres.add(new QueueImpl<Book>(10));
+                logger.info("New queue created");
+                pilesLlibres.get(pilesLlibres.size() - 1).push(book);
+            }
         }
         logger.info("Book added to the queue");
     }
@@ -148,16 +162,18 @@ public class BibliotecaManagerImpl implements BibliotecaManager {
         Book book = pilaLlibresPrimera.pop();
 
         if (pilaLlibresPrimera.size() == 0) {
-            if (!pilesLlibres.isEmpty() && pilesLlibres.get(0).size() > 0)
+            if (!pilesLlibres.isEmpty())
                 pilaLlibresPrimera = pilesLlibres.get(0);
             else {
-                logger.error("Piles buides", new EmptyQueueException());
+                logger.error("Piles buides");
+                throw new EmptyQueueException();
             }
 
-            pilesLlibres.remove(0);
+            if (pilesLlibres.size() > 1)
+                pilesLlibres.remove(0);
         }
 
-        Book b = getBookByID(book.getId());
+        Book b = getBookByISBN(book.getIsbn());
 
         if (b == null) {
             this.books.add(book);
@@ -171,33 +187,38 @@ public class BibliotecaManagerImpl implements BibliotecaManager {
 
     @Override
     public void addPrestec(Prestec prestec) {
-        logger.info("Prestec added");
+        Book book = getBookByID(prestec.getIdBook());
+        if (book == null) {
+            logger.error("Book with id: " + prestec.getIdBook() + " not found");
+            throw new BookNotFoundException();
+        }
+
+        if (users.get(prestec.getIdUser()) == null) {
+            logger.error("User with id: " + prestec.getIdUser() + " not found");
+            throw new UserNotFoundException();
+        }
+
+        if (book.getNumExemplars() == 0) {
+            logger.error("No book with id: " + prestec.getIdBook() + " available");
+            throw new SenseExemplarsException();
+        }
+
         prestecs.add(prestec);
+        users.get(prestec.getIdUser()).addPrestect(prestec);
+        logger.info("Prestec added");
     }
 
     @Override
     public void addPrestec(String idUser, String idBook, String dataPrestec, String dataDevolucio) {
-        Book book = getBookByID(idBook);
-        if (book == null)
-            logger.error("Book with id: " + idBook + " not found", new BookNotFoundException());
-
-        if (users.get(idUser) == null)
-            logger.error("User with id: " + idUser + " not found", new UserNotFoundException());
-
-        if (book.getNumExemplars() == 0)
-            logger.error("No book with id: " + idBook + " available", new SenseExemplarsException());
-
         Prestec prestec = new Prestec(idUser, idBook, dataPrestec, dataDevolucio);
-        prestecs.add(prestec);
-        logger.info("Prestec added");
+        addPrestec(prestec);
     }
 
     @Override
     public void addPrestec(String id, String idUser, String idBook, String dataPrestec, String dataDevolucio) {
         Prestec prestec = new Prestec(idUser, idBook, dataPrestec, dataDevolucio);
         prestec.setId(id);
-        prestecs.add(prestec);
-        logger.info("Prestec added");
+        addPrestec(prestec);
     }
 
     @Override
@@ -208,11 +229,17 @@ public class BibliotecaManagerImpl implements BibliotecaManager {
 
     @Override
     public void clear() {
-        books.clear();
-        prestecs.clear();
-        pilaLlibresPrimera = null;
-        pilesLlibres.clear();
-        bm = null;
+        if (bm != null) {
+            books.clear();
+            books = null;
+            prestecs.clear();
+            prestecs = null;
+            users.clear();
+            users = null;
+            pilaLlibresPrimera = null;
+            pilesLlibres.clear();
+            pilesLlibres = null;
+            bm = null;
+        }
     }
-
 }
