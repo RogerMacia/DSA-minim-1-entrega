@@ -145,13 +145,13 @@ public class BibliotecaManagerImpl implements BibliotecaManager {
     }
 
     @Override
-    public void addBook(String ISBN, String title, String publisher, String yearPublished, int numEdition, String author, String theme) {
+    public void addBook(String ISBN, String title, String publisher, String yearPublished, String numEdition, String author, String theme) {
         Book book = new Book(ISBN, title, publisher, yearPublished, numEdition, author, theme);
         addBook(book);
     }
 
     @Override
-    public void addBook(String id, String ISBN, String title, String publisher, String yearPublished, int numEdition, String author, String theme) {
+    public void addBook(String id, String ISBN, String title, String publisher, String yearPublished, String numEdition, String author, String theme) {
         Book book = new Book(ISBN, title, publisher, yearPublished, numEdition, author, theme);
         book.setId(id);
         addBook(book);

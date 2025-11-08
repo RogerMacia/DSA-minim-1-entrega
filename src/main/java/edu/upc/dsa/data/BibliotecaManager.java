@@ -10,8 +10,8 @@ public interface BibliotecaManager {
     public void addUser(String id, String name, String surname, String DNI, String birthDate, String birthPlace, String address);
 
     public void addBook(Book book);
-    public void addBook(String ISBN, String title, String publisher, String yearPublished, int numEdition, String author, String theme);
-    public void addBook(String id, String ISBN, String title, String publisher, String yearPublished, int numEdition, String author, String theme);
+    public void addBook(String ISBN, String title, String publisher, String yearPublished, String numEdition, String author, String theme);
+    public void addBook(String id, String ISBN, String title, String publisher, String yearPublished, String numEdition, String author, String theme);
 
     public void catalogarBook();
 

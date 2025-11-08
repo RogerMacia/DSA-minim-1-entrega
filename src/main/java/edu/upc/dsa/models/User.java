@@ -11,7 +11,7 @@ public class User {
     private String id;
     private String name;
     private String surname;
-    private String DNI;
+    private String dni;
     private String birthDate;
     private String birthPlace;
     private String address;
@@ -20,11 +20,11 @@ public class User {
     private LinkedList<Prestec> prestects;
 
     public User() {}
-    public User(String name, String surname, String DNI, String birthDate, String birthPlace, String address) {
+    public User(String name, String surname, String dni, String birthDate, String birthPlace, String address) {
         this.id = RandomUtils.getId();
         this.name = name;
         this.surname = surname;
-        this.DNI = DNI;
+        this.dni = dni;
         this.setBirthDate(birthDate);
         this.birthPlace = birthPlace;
         this.address = address;
@@ -52,11 +52,11 @@ public class User {
         this.surname = surname;
     }
 
-    public String getDNI() {
-        return DNI;
+    public String getDni() {
+        return dni;
     }
-    public void setDNI(String DNI) {
-        this.DNI = DNI;
+    public void setDni(String dni) {
+        this.dni = dni;
     }
 
     public String getBirthDate() {

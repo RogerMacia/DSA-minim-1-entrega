@@ -2,7 +2,6 @@ package edu.upc.dsa.services;
 
 import edu.upc.dsa.data.*;
 import edu.upc.dsa.exceptions.EmptyQueueException;
-import edu.upc.dsa.exceptions.InvalidDateFormatException;
 import edu.upc.dsa.models.*;
 import edu.upc.dsa.util.RandomUtils;
 import io.swagger.annotations.Api;
@@ -24,23 +23,23 @@ public class BibliotecaManagerService {
     public BibliotecaManagerService() {
         this.bm = BibliotecaManagerImpl.getInstance();
         if (bm.getBooks().isEmpty()) {
-            bm.addBook("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN2", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN3", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN4", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN4", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN4", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN5", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN6", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN7", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN7", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN7", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN8", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN9", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN10", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN11", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN12", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
-            bm.addBook("ISBN12", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
+            bm.addBook("ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN2", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN3", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN4", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN4", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN4", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN5", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN6", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN7", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN7", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN7", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN8", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN9", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN10", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN11", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN12", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+            bm.addBook("ISBN12", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
 
             bm.catalogarBook();
             bm.catalogarBook();
@@ -84,7 +83,7 @@ public class BibliotecaManagerService {
     }
 
     @POST
-    @ApiOperation(value = "Add a user, the id will be changed")
+    @ApiOperation(value = "Add a user")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad request")
@@ -92,22 +91,17 @@ public class BibliotecaManagerService {
     @Path("/addUser")
     @Produces(MediaType.APPLICATION_JSON)
     public Response addUser(User user) {
-        if (user.getName() == null || user.getSurname() == null || user.getDNI() == null || user.getBirthDate() == null || user.getBirthPlace() == null || user.getAddress() == null)
-            return Response.status(400).build();
-        try {
-            user.setId(RandomUtils.getId());
+        if (user.getName() == null || user.getSurname() == null || user.getDni() == null || user.getBirthDate() == null || user.getBirthPlace() == null || user.getAddress() == null)
+            return Response.status(400).entity("Invalid parameters").build();
 
-            bm.addUser(user);
+        user.setId(RandomUtils.getId());
+        bm.addUser(user);
 
-            return Response.status(200).build();
-        }
-        catch (InvalidDateFormatException e) {
-            return Response.status(400).entity("Invalid date format").build();
-        }
+        return Response.status(200).build();
     }
 
     @POST
-    @ApiOperation(value = "Add a book, the id will be changed")
+    @ApiOperation(value = "Add a book")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad request")
@@ -117,16 +111,11 @@ public class BibliotecaManagerService {
     public Response addBook(Book book) {
         if (book.getIsbn() == null || book.getTitle() == null || book.getPublisher() == null || book.getYearPublished() == null || book.getAuthor() == null || book.getTheme() == null)
             return Response.status(400).entity("Invalid parameters").build();
-        try {
-            book.setId(RandomUtils.getId());
 
-            bm.addBook(book);
+        book.setId(RandomUtils.getId());
+        bm.addBook(book);
 
-            return Response.status(200).build();
-        }
-        catch (InvalidDateFormatException e) {
-            return Response.status(400).entity("Invalid date format").build();
-        }
+        return Response.status(200).build();
     }
 
     @POST

@@ -64,7 +64,7 @@ public class BibliotecaManagerImplTest {
 
     @Test
     public void testAddBook1() {
-        Book book = new Book("978-84-376-0494-7", "El Quixot", "Planeta", "1-2-2005", 1, "Cervantes", "Novel·la");
+        Book book = new Book("978-84-376-0494-7", "El Quixot", "Planeta", "2005", "1", "Cervantes", "Novel·la");
         bm.addBook(book);
 
         Assert.assertEquals(book, bm.getPilaLlibresPrimera().pop());
@@ -72,7 +72,7 @@ public class BibliotecaManagerImplTest {
 
     @Test
     public void testAddBook2() {
-        bm.addBook("978-84-376-0494-7", "El Quixot", "Planeta", "1-2-2005", 1, "Cervantes", "Novel·la");
+        bm.addBook("978-84-376-0494-7", "El Quixot", "Planeta", "2005", "1", "Cervantes", "Novel·la");
 
 
         Assert.assertEquals(1, bm.getPilaLlibresPrimera().size());
@@ -80,7 +80,7 @@ public class BibliotecaManagerImplTest {
 
     @Test
     public void testAddBook3() {
-        bm.addBook("1", "978-84-376-0494-7", "El Quixot", "Planeta", "1-2-2005", 1, "Cervantes", "Novel·la");
+        bm.addBook("1", "978-84-376-0494-7", "El Quixot", "Planeta", "2005", "1", "Cervantes", "Novel·la");
 
         Assert.assertEquals(1, bm.getPilaLlibresPrimera().size());
     }
@@ -88,7 +88,7 @@ public class BibliotecaManagerImplTest {
     @Test
     public void testAddBook4() {
         for (int i = 0; i < 50; i++) {
-            bm.addBook(String.valueOf(i), "ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+            bm.addBook(String.valueOf(i), "ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
         }
 
         Assert.assertEquals(5, bm.getPilesLlibres().size());
@@ -98,7 +98,7 @@ public class BibliotecaManagerImplTest {
     public void testCatalogarBookBuit() {
         Queue<Book> q = new QueueImpl<>(10);
 
-        bm.addBook("1", "978-84-376-0494-7", "El Quixot", "Planeta", "1-2-2005", 1, "Cervantes", "Novel·la");
+        bm.addBook("1", "978-84-376-0494-7", "El Quixot", "Planeta", "2005", "1", "Cervantes", "Novel·la");
 
         bm.catalogarBook();
 
@@ -109,8 +109,8 @@ public class BibliotecaManagerImplTest {
 
     @Test
     public void testCatalogarBook2Queues() {
-        bm.addBook("1", "ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
-        bm.addBook("2", "ISBN2", "Títol", "Editorial", "3/8/2020", 1, "Autor", "Tema");
+        bm.addBook("1", "ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
+        bm.addBook("2", "ISBN2", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
 
         bm.catalogarBook();
         bm.catalogarBook();
@@ -124,7 +124,7 @@ public class BibliotecaManagerImplTest {
     @Test
     public void testCatalogarBookMoltesCues() {
         for (int i = 0; i < 50; i++) {
-            bm.addBook(String.valueOf(i), "ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+            bm.addBook(String.valueOf(i), "ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
         }
 
         for (int i = 0; i < 25; i++) {
@@ -137,7 +137,7 @@ public class BibliotecaManagerImplTest {
     @Test
     public void testAddPrestec1() {
         bm.addUser("1", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
-        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book = new Book("ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
         book.setId("2");
         bm.getBooks().add(book);
 
@@ -150,7 +150,7 @@ public class BibliotecaManagerImplTest {
     @Test
     public void testAddPrestec2() {
         bm.addUser("1", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
-        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book = new Book("ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
         book.setId("2");
         bm.getBooks().add(book);
 
@@ -162,7 +162,7 @@ public class BibliotecaManagerImplTest {
     @Test
     public void testAddPrestec3() {
         bm.addUser("1", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
-        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book = new Book("ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
         book.setId("2");
         bm.getBooks().add(book);
 
@@ -174,7 +174,7 @@ public class BibliotecaManagerImplTest {
     @Test(expected = UserNotFoundException.class)
     public void testAddPrestecUserIncorrecte() {
         bm.addUser("2", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
-        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book = new Book("ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
         book.setId("2");
         bm.getBooks().add(book);
 
@@ -185,7 +185,7 @@ public class BibliotecaManagerImplTest {
     @Test(expected = BookNotFoundException.class)
     public void testAddPrestecBookIncorrecte() {
         bm.addUser("1", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
-        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book = new Book("ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
         book.setId("1");
         bm.getBooks().add(book);
 
@@ -196,7 +196,7 @@ public class BibliotecaManagerImplTest {
     @Test(expected = IllegalArgumentException.class)
     public void testAddPrestecDataIncorrecte() {
         bm.addUser("1", "Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
-        Book book = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book = new Book("ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
         book.setId("1");
         bm.getBooks().add(book);
 
@@ -208,9 +208,9 @@ public class BibliotecaManagerImplTest {
         User u1 = new User("Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
         u1.setId("1");
         bm.addUser(u1);
-        Book book1 = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book1 = new Book("ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
         book1.setId("1");
-        Book book2 = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book2 = new Book("ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
         book2.setId("2");
 
         bm.getBooks().add(book1);
@@ -229,9 +229,9 @@ public class BibliotecaManagerImplTest {
         User u1 = new User("Joan", "Serra", "87654321B", "02/02/1980", "Girona", "Carrer Nou 3");
         u1.setId("1");
         bm.addUser(u1);
-        Book book1 = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book1 = new Book("ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
         book1.setId("1");
-        Book book2 = new Book("ISBN1", "Títol", "Editorial", "1-1-2020", 1, "Autor", "Tema");
+        Book book2 = new Book("ISBN1", "Títol", "Editorial", "2020", "1", "Autor", "Tema");
         book2.setId("2");
 
         bm.getBooks().add(book1);
@@ -245,7 +245,7 @@ public class BibliotecaManagerImplTest {
 
     @Test
     public void testClear() {
-        bm.getBooks().add(new Book("111", "Test", "Planeta", "5/12/2020", 1, "Autor", "Tema"));
+        bm.getBooks().add(new Book("111", "Test", "Planeta", "2020", "1", "Autor", "Tema"));
         bm.addUser(new User("Anna", "Riba", "9999", "01/01/2001", "Tarragona", "Carrer X"));
 
         bm.clear();
